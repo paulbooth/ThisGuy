@@ -13,10 +13,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class ThisGuyActivity extends Activity implements View.OnTouchListener
 {
@@ -30,7 +27,9 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener
     private final Integer[] TWOTHUMBSOUNDS = {R.raw.thisguy1, R.raw.thisguy2, R.raw.thisguy3, R.raw.thisguy4};
     private final Integer[] ONETHUMBSOUNDS = {R.raw.thisguyi1, R.raw.thisguyi2};
     static final Random random = new Random();
-
+    static final long ONETHUMBSOUNDTIME = 200;
+    
+    Timer oneThumbSoundPlayerTimer = new Timer();
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -90,6 +89,7 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener
     // YEAH THIS GUY!
     // TWO THUMBS!!
     private void this_guy_yeah() {
+        oneThumbSoundPlayerTimer.cancel();
         backgroundImage.setImageResource(R.drawable.thisguy2);
         playSound(random.nextInt(TWOTHUMBSOUNDS.length));
     }
@@ -98,18 +98,29 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener
     // One thumb.
     private void this_guy_maybe() {
         backgroundImage.setImageResource(R.drawable.cam);
-        //playSound(TWOTHUMBSOUNDS.length + random.nextInt(ONETHUMBSOUNDS.length));
+        oneThumbSoundPlayerTimer.cancel();
+        oneThumbSoundPlayerTimer.purge();
+        oneThumbSoundPlayerTimer = new Timer();
+        oneThumbSoundPlayerTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                playSound(TWOTHUMBSOUNDS.length + random.nextInt(ONETHUMBSOUNDS.length));
+            }
+        }, ONETHUMBSOUNDTIME);
     }
 
     // Not this guy.
     // no thumbs
     private void not_this_guy() {
+        oneThumbSoundPlayerTimer.cancel();
+        
         backgroundImage.setImageResource(R.drawable.whohas);
     }
 
     // Alien/ friends
     // more than two tumbs!?
     private void more_than_2_thumbs() {
+        oneThumbSoundPlayerTimer.cancel();
         backgroundImage.setImageResource(R.drawable.whohas);
          Toast toast = Toast.makeText(getApplicationContext(),
                  "Thumbs: " + numThumbs,
