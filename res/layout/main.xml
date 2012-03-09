@@ -3,10 +3,36 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
+    <TextView android:id="@+id/who_has_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#CBB"
+              android:capitalize="characters"
+              android:text="WHO HAS TWO THUMBS AND"
+              android:textIsSelectable="true"
+              android:textStyle="bold"
+              android:typeface="sans"
+              android:layout_gravity="center_horizontal"
+              android:editable="true"
+            />
+    <EditText android:id="@+id/done_what"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#CBB"
+              android:capitalize="characters"
+              android:text="LOVES THIS APP?"
+              android:textIsSelectable="true"
+              android:textStyle="bold"
+              android:typeface="sans"
+              android:editable="true"
+              android:autoText="true"
+              android:layout_gravity="bottom"
+            />
     <ImageView android:id="@+id/imageView"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"
-               android:src="@drawable/whohas">
+               android:src="@drawable/whohas"
+            android:visibility="invisible">
     </ImageView>
 </FrameLayout>
 

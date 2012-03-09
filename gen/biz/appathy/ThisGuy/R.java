@@ -20,10 +20,13 @@ public final class R {
         public static final int whohas=0x7f020006;
     }
     public static final class id {
-        public static final int imageView=0x7f060000;
+        public static final int done_what=0x7f060001;
+        public static final int imageView=0x7f060002;
+        public static final int who_has_text=0x7f060000;
     }
     public static final class layout {
         public static final int main=0x7f030000;
+        public static final int who_has_two_thumbs=0x7f030001;
     }
     public static final class raw {
         public static final int thisguy1=0x7f040000;
