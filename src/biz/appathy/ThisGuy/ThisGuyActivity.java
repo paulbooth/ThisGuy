@@ -1,6 +1,9 @@
 package biz.appathy.ThisGuy;
 
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -10,10 +13,24 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 public class ThisGuyActivity extends Activity implements View.OnTouchListener
 {
     int numThumbs = 0;
     private ImageView backgroundImage = null;
+
+    /* sound variables */
+    private SoundPool soundPool;
+    private HashMap<Integer, Integer> soundPoolMap;
+    private Set<Integer> loaded_soundIds;
+    private final Integer[] TWOTHUMBSOUNDS = {R.raw.thisguy1, R.raw.thisguy2, R.raw.thisguy3, R.raw.thisguy4};
+    private final Integer[] ONETHUMBSOUNDS = {R.raw.thisguyi1, R.raw.thisguyi2};
+    static final Random random = new Random();
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -23,12 +40,13 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
+
+        initSounds();
         backgroundImage = (ImageView) findViewById(R.id.imageView);
         backgroundImage.setVisibility(View.INVISIBLE);
-        backgroundImage.setImageResource(R.drawable.thumb1);
+        backgroundImage.setImageResource(R.drawable.cam);
         backgroundImage.setImageResource(R.drawable.thisguy2);
-        backgroundImage.setImageResource(R.drawable.who        backgroundImage.setVisibility(View.VISIBLE);
-has);
+        backgroundImage.setImageResource(R.drawable.whohas);
         backgroundImage.setVisibility(View.VISIBLE);
         backgroundImage.setOnTouchListener(this);
     }
@@ -48,6 +66,8 @@ has);
                     numThumbs--;
                 break;
             }
+            default:
+                return false;
         }
         Log.d("Thumbs", "thumbs:" + numThumbs);
         switch (numThumbs){
@@ -71,12 +91,14 @@ has);
     // TWO THUMBS!!
     private void this_guy_yeah() {
         backgroundImage.setImageResource(R.drawable.thisguy2);
+        playSound(random.nextInt(TWOTHUMBSOUNDS.length));
     }
 
     // Was it this guy?
     // One thumb.
     private void this_guy_maybe() {
-        backgroundImage.setImageResource(R.drawable.thumb1);
+        backgroundImage.setImageResource(R.drawable.cam);
+        //playSound(TWOTHUMBSOUNDS.length + random.nextInt(ONETHUMBSOUNDS.length));
     }
 
     // Not this guy.
@@ -95,4 +117,51 @@ has);
         toast.show();
     }
 
+    private void initSounds() {
+
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundPoolMap = new HashMap<Integer, Integer>();
+        loaded_soundIds = new HashSet<Integer>();
+        for (int i = 0; i < TWOTHUMBSOUNDS.length; i++) {
+            addSound(i, TWOTHUMBSOUNDS[i]);
+        }
+        for (int i = 0; i < ONETHUMBSOUNDS.length; i++) {
+            addSound(i + TWOTHUMBSOUNDS.length, ONETHUMBSOUNDS[i]);
+        }
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId,
+                                       int status) {
+                Log.d("sound","LOADED:" + sampleId);
+                loaded_soundIds.add(sampleId);
+            }
+        });
+
+    }
+
+    private void addSound(int index, int soundID)
+    {
+        soundPoolMap.put(index, soundPool.load(getBaseContext(), soundID, 1));
+    }
+    /* not coded by me */
+    /* from http://www.androidsnippets.com/playing-sound-fx-for-a-game*/
+    public void playSound(int sound) {
+        /* Updated: The next 4 lines calculate the current volume in a scale of 0.0 to 1.0 */
+        AudioManager mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+        float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = streamVolumeCurrent / streamVolumeMax;
+
+        /* Play the sound with the correct volume */
+        Log.d("sound","playsound:" + soundPoolMap);
+        Log.d("sound","soundpoolmap value:" + soundPoolMap.get(sound));
+
+        if (loaded_soundIds.contains(soundPoolMap.get(sound))) {
+            soundPool.play(soundPoolMap.get(sound), volume, volume, 1, 0, 1f);
+            Log.d("sound", "SOUND PLAYED:" + sound + " pool#" + soundPoolMap.get(sound));
+        } else {
+            Log.d("sound", "sound not played. DDDD:" + sound);
+        }
+    }
 }
