@@ -6,14 +6,14 @@ import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.inputmethod.EditorInfo;
+import android.widget.*;
 
 import java.util.*;
 
@@ -31,8 +31,15 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
     private final Integer[] ONETHUMBSOUNDS = {R.raw.thisguyi1, R.raw.thisguyi2};
     static final Random random = new Random();
     static final long ONETHUMBSOUNDTIME = 200;
+    static final long TEXTRESIZETIME = 100;
 
     Timer oneThumbSoundPlayerTimer = new Timer();
+    Timer textResizeTimer = new Timer();
+    Handler textResizeHandler;
+    boolean tooBigLastTime = false;
+
+    private int device_height = 533;
+    private boolean textChanged = false;
 
     /**
      * Called when the activity is first created.
@@ -56,26 +63,157 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
         //backgroundImage.setVisibility(View.VISIBLE);
         backgroundImage.setOnTouchListener(this);
         textView.setOnTouchListener(this);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        try{
+            Point size = new Point();
+            display.getSize(size);
+            device_height = size.y;
+        } catch(NoSuchMethodError e) {
+            Log.d("thisguy", "display doesn't have getSize method. Trying deprecated method");
+            device_height = display.getHeight();
+        }
+        Log.d("size","device is " + device_height + " high.");
+
+        textResizeHandler = new Handler() {
+          @Override
+            public void handleMessage(Message msg) {
+              float textSize = (Float) msg.obj;
+              editText.setTextSize(textSize);
+              textView.setTextSize(textSize);
+          }
+        };
+        textResizeTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                int textHeight = textView.getHeight();
+                int editHeight = editText.getHeight();
+
+                if (textHeight > 0 && editHeight > 0) {
+                    float textSize = textView.getTextSize();
+                    float newTextSize = 0;
+                    if (textHeight + editHeight > device_height) {
+                        newTextSize = textSize - 1;
+                        tooBigLastTime = true;
+                    } else if (textHeight + editHeight < device_height) {
+                        if (tooBigLastTime && !textChanged) {
+                           newTextSize = 0;
+                        } else {
+                            tooBigLastTime = false;
+                            newTextSize = textSize + 1;
+                            textChanged = false;
+                        }
+                    } else {
+                        tooBigLastTime = false;
+                    }
+                    if (newTextSize > 0) {
+                        Message msg = new Message();
+                        msg.obj = newTextSize;
+                        textResizeHandler.sendMessage(msg);
+                    }
+                }
+            }
+        }, TEXTRESIZETIME, TEXTRESIZETIME);
+        
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("thisguykeys", "edittext clicked.");
+                keyboardAppeaered();
+            }
+        });
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //To change body of implemented methods use File | Settings | File Templates.
+
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d("textChanged", "The text was changed.");
-                refitTextSize();
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {    
+
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 //To change body of implemented methods use File | Settings | File Templates.
-                Log.d("textChanged", "The text is afterTextchanged.");
+                textChanged = true;
             }
         });
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Log.d("thisguykeys", "oneditoractionlistener: keyevent null:" + actionId);
+                    keyboardDisappeared();
+                    Log.d("thisguykeys", "textview visible? " + textView.getVisibility());
+                    return false;
+                }
+                if (keyEvent.getKeyCode() == KeyEvent.ACTION_DOWN) {
+                  Log.d("thisguykeys", "action done CALLED. oneditoractionlistener");
+                    keyboardDisappeared();
+                    return false;
+                }
+                Log.d("thisguykeys", "oneditoractionlistener:" + keyEvent.getKeyCode() + " int:" + actionId);
+                return false;
+            }
+        });
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    Log.d("thisguykeys", "KEYCODE BACK CALLED. onkeylistener");
+                    keyboardDisappeared();
+                    return false;
+                }
+                Log.d("thisguykeys", "onkeylistener:" + keyEvent.getKeyCode() + " int:" + i);
+                return false;
+            }
+        });
+
     }
 
+    public void keyboardAppeaered() {
+        Log.d("thisguy", "keyboard appeared.");
+        textView.setVisibility(View.INVISIBLE);
+        ((FrameLayout.LayoutParams) editText.getLayoutParams()).gravity = Gravity.TOP;
+        editText.requestLayout();
+    }
+    
+    public void keyboardDisappeared() {
+        Log.d("thisguy", "keyboard disappeared.");
+        textView.setVisibility(View.VISIBLE);
+        ((FrameLayout.LayoutParams) editText.getLayoutParams()).gravity = Gravity.BOTTOM;
+        editText.setSelected(false);
+        editText.requestLayout();
+    }
+
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d("Keyboard", "Configuration Changed!");
+        if (newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_NO) {
+            Log.d("Keyboard", "keyboard not hidden!");
+           textView.setVisibility(View.INVISIBLE);
+        } else if (newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_YES ||
+                newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_UNDEFINED) {
+            Log.d("Keyboard", "keyboard hidden!");
+           textView.setVisibility(View.VISIBLE);
+
+        }
+    }*/
+    
+    
+    @Override
+    public void onStop() {
+        super.onStop();
+        stopTextResizeTimer();
+    }
+
+
+    public void stopTextResizeTimer() {
+        textResizeTimer.cancel();
+        textResizeTimer.purge();
+    }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         final int action = motionEvent.getAction();
@@ -166,7 +304,6 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
     }
 
     private void initSounds() {
-
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         soundPoolMap = new HashMap<Integer, Integer>();
         loaded_soundIds = new HashSet<Integer>();
@@ -211,58 +348,5 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
         } else {
             Log.d("sound", "sound not played. DDDD:" + sound);
         }
-    }
-
-    private void refitTextSize() {
-        if (editText.getLineCount()> 0) {
-            Log.d("goobah", "good");
-            editText.setTextSize(65);
-            Log.d("goobah", "" + (editText.getLineCount()> 0));
-        }  else {
-            Log.d("goobah", "bad");
-        }
-        Display display = getWindowManager().getDefaultDisplay();
-
-        int width_device = 320;
-        int height_device = 500;
-        try{
-            Point size = new Point();
-            display.getSize(size);
-            width_device = size.x;
-            height_device = size.y;
-        } catch(NoSuchMethodError e) {
-            Log.d("thisguy", "display doesn't have getSize method. Trying deprecated method");
-            height_device = display.getHeight();
-            width_device = display.getWidth();
-        }
-        Log.d("size", "device is " + width_device + " wide and " + height_device + " high.");
-        int maxTextSize = 100;
-        for (int textSize = maxTextSize; textSize > 5; textSize--) {
-            textView.setTextSize(textSize);
-            editText.setTextSize(textSize);
-            int height_textView = getTextViewHeight(textView);
-            int height_editText = getTextViewHeight(editText);
-            Log.d("size", "height_textView:" + height_textView);
-            Log.d("size", "height_editText:" + height_editText);
-            Log.d("size", "height_device:" + height_device + "<" + (height_editText+height_textView));
-            Log.d("size", "textView_lineCount:" + textView.getLineCount() );
-            Log.d("size", "textView_lineHeight:" + textView.getLineHeight() );
-            Log.d("size", "textView_getHeight:" + textView.getHeight() );
-            Log.d("size", "editText_lineCount:" + editText.getLineCount() );
-            Log.d("size", "editText_lineHeight:" + editText.getLineHeight() );
-            Log.d("size", "editText_getHeight:" + editText.getHeight() );
-
-            if (height_device >= height_editText + height_textView) {
-                break;
-            }
-        }
-    }
-
-    private int getTextViewHeight(TextView textView) {
-        int lines = textView.getLineCount();
-        if (lines == 0) {
-            lines = 4;
-        }
-        return lines * textView.getLineHeight(); //approx height text
     }
 }
