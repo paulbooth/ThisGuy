@@ -12,7 +12,7 @@
     </option>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="key" />
+    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="thisguy" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="DEBUG" />
   </component>
   <component name="ChangeListManager">
@@ -78,7 +78,7 @@
       <file leaf-file-name="ThisGuyActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/biz/appathy/ThisGuy/ThisGuyActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="81" column="93" selection-start="3080" selection-end="3080" vertical-scroll-proportion="0.43875685">
+            <state line="186" column="31" selection-start="7409" selection-end="7409" vertical-scroll-proportion="0.43144423">
               <folding />
             </state>
           </provider>
@@ -87,7 +87,7 @@
       <file leaf-file-name="main.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="45" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
+            <state line="11" column="42" selection-start="510" selection-end="510" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -482,7 +482,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="-5" width="1442" height="906" extended-state="7" />
+    <frame x="-1" y="-5" width="1442" height="906" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -493,7 +493,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25329816" sideWeight="0.5007184" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32692307" sideWeight="0.49712643" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32585752" sideWeight="0.49712643" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297414" sideWeight="0.74670184" order="5" side_tool="false" content_ui="tabs" />
@@ -639,14 +639,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="45" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
+        <state line="11" column="42" selection-start="510" selection-end="510" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/biz/appathy/ThisGuy/ThisGuyActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="81" column="93" selection-start="3080" selection-end="3080" vertical-scroll-proportion="0.43875685">
+        <state line="186" column="31" selection-start="7409" selection-end="7409" vertical-scroll-proportion="0.43144423">
           <folding />
         </state>
       </provider>

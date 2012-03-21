@@ -22,6 +22,7 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
     private ImageView backgroundImage = null;
     private TextView textView = null;
     private EditText editText = null;
+    private Button button = null;
 
     /* sound variables */
     private SoundPool soundPool;
@@ -55,6 +56,7 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
         initSounds();
         textView = (TextView) findViewById(R.id.who_has_text);
         editText = (EditText) findViewById(R.id.done_what);
+        button = (Button) findViewById(R.id.clear_button);
         backgroundImage = (ImageView) findViewById(R.id.imageView);
         backgroundImage.setVisibility(View.INVISIBLE);
         backgroundImage.setImageResource(R.drawable.cam);
@@ -79,6 +81,9 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
           @Override
             public void handleMessage(Message msg) {
               float textSize = (Float) msg.obj;
+              if (button.getVisibility() == View.VISIBLE) {
+                adjustClearButton();
+              }
               editText.setTextSize(textSize);
               textView.setTextSize(textSize);
           }
@@ -175,8 +180,11 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
     public void keyboardAppeaered() {
         Log.d("thisguy", "keyboard appeared.");
         textView.setVisibility(View.INVISIBLE);
+        button.setVisibility(View.VISIBLE);
+        adjustClearButton();
         ((FrameLayout.LayoutParams) editText.getLayoutParams()).gravity = Gravity.TOP;
         editText.requestLayout();
+        button.requestLayout();
     }
     
     public void keyboardDisappeared() {
@@ -184,7 +192,20 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
         textView.setVisibility(View.VISIBLE);
         ((FrameLayout.LayoutParams) editText.getLayoutParams()).gravity = Gravity.BOTTOM;
         editText.setSelected(false);
+        button.setVisibility(View.INVISIBLE);
         editText.requestLayout();
+    }
+    
+    public void clearEditText(View view) {
+        editText.setText("");
+    }
+
+    public void adjustClearButton() {
+        Log.d("thisguy", "adjustclearbutton. editTextHeight:" + editText.getHeight());
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, editText.getHeight(), 0, 0);
+        lp.gravity = Gravity.RIGHT;
+        button.setLayoutParams(lp);
     }
 
     /*@Override
@@ -202,18 +223,17 @@ public class ThisGuyActivity extends Activity implements View.OnTouchListener {
         }
     }*/
     
-    
     @Override
     public void onStop() {
         super.onStop();
         stopTextResizeTimer();
     }
 
-
     public void stopTextResizeTimer() {
         textResizeTimer.cancel();
         textResizeTimer.purge();
     }
+
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         final int action = motionEvent.getAction();
